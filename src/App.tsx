@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   House,
   Dumbbell,
@@ -17,6 +17,8 @@ import { Today } from './screens/Today';
 import { Workouts } from './screens/Workouts';
 import { Calendar } from './screens/Calendar';
 import { Settings } from './screens/Settings';
+import { playRestSound } from './restSound';
+import { remainingRestSeconds } from './rest';
 type Tab = 'today' | 'workouts' | 'calendar' | 'settings';
 const tabs = [
   { id: 'today' as const, label: 'Hoje', icon: House },
@@ -29,6 +31,44 @@ export default function App() {
   const pwa = usePwa(tracker.canUpdate);
   const [tab, setTab] = useState<Tab>('today');
   const [create, setCreate] = useState(false);
+  const restTimers = useRef(new Map<string, { deadline: number; timer: number }>());
+  const sounded = useRef(new Set<string>());
+  useEffect(() => {
+    if (!tracker.ready) return;
+    const active = new Map<string, number>();
+    for (const session of tracker.state.sessions) {
+      if (session.endedAt) continue;
+      for (const exercise of session.exercises) {
+        const deadline = exercise.restEndsAt;
+        if (deadline !== null && deadline !== undefined && deadline > Date.now())
+          active.set(`${session.id}:${exercise.id}`, deadline);
+      }
+    }
+    for (const [key, scheduled] of restTimers.current) {
+      if (active.get(key) !== scheduled.deadline) {
+        window.clearTimeout(scheduled.timer);
+        restTimers.current.delete(key);
+      }
+    }
+    for (const [key, deadline] of active) {
+      if (restTimers.current.get(key)?.deadline === deadline) continue;
+      const token = `${key}:${deadline}`;
+      const timer = window.setTimeout(() => {
+        restTimers.current.delete(key);
+        if (!sounded.current.has(token) && remainingRestSeconds(deadline, Date.now()) === 0) {
+          sounded.current.add(token);
+          playRestSound();
+        }
+      }, Math.max(0, deadline - Date.now()));
+      restTimers.current.set(key, { deadline, timer });
+    }
+  }, [tracker.ready, tracker.state.sessions]);
+  useEffect(
+    () => () => {
+      for (const { timer } of restTimers.current.values()) window.clearTimeout(timer);
+    },
+    []
+  );
   const go = (next: Tab) => {
     setTab(next);
     window.scrollTo({ top: 0 });

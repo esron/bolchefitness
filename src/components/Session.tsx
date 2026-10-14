@@ -14,6 +14,7 @@ import { type Tracker } from '../useTracker';
 import { Modal } from './UI';
 import { RestTimer } from './RestTimer';
 import { startRest, cancelRest } from '../rest';
+import { enableRestSound } from '../restSound';
 export function Session({ session, tracker }: { session: SessionData; tracker: Tracker }) {
   const { update, pending } = tracker;
   const progress = totals(session);
@@ -155,11 +156,12 @@ export function Session({ session, tracker }: { session: SessionData; tracker: T
                   <RestTimer
                     exercise={exercise}
                     pending={pending}
-                    onStart={(seconds) =>
-                      update((state) =>
+                    onStart={(seconds) => {
+                      enableRestSound();
+                      return update((state) =>
                         startRest(state, session.id, exercise.id, seconds, Date.now())
-                      )
-                    }
+                      );
+                    }}
                     onCancel={() => update((state) => cancelRest(state, session.id, exercise.id))}
                   />
                 </div>
