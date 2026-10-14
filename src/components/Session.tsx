@@ -119,10 +119,7 @@ export function Session({ session, tracker }: { session: SessionData; tracker: T
                   {exercise.sets.map((set, i) => (
                     <div className={`set-row ${set.done ? 'done' : ''}`} key={i}>
                       <span className="set-number">{i + 1}</span>
-                      <span>
-                        {set.reps}
-                        {exercise.metric === 'time' ? ' s' : ''}
-                      </span>
+                      <span>{set.reps}</span>
                       <button
                         className="load-button"
                         aria-label={`Editar ${exercise.name}, série ${i + 1}`}
@@ -219,13 +216,7 @@ export function Session({ session, tracker }: { session: SessionData; tracker: T
               const reps = String(data.get('reps')).trim();
               const rawLoad = String(data.get('load')).trim();
               const load = rawLoad ? Number(rawLoad) : 0;
-              if (
-                !reps ||
-                (editingExercise?.metric === 'time' && (!/^\d+$/.test(reps) || Number(reps) < 1)) ||
-                !Number.isFinite(load) ||
-                load < 0
-              )
-                return;
+              if (!reps || !Number.isFinite(load) || load < 0) return;
               const saved = await mutate((s) => ({
                 ...s,
                 exercises: s.exercises.map((ex) =>
@@ -244,16 +235,8 @@ export function Session({ session, tracker }: { session: SessionData; tracker: T
           >
             <div className="form-row two">
               <label>
-                {editingExercise?.metric === 'time' ? 'Tempo (segundos)' : 'Repetições'}
-                <input
-                  autoFocus
-                  name="reps"
-                  type={editingExercise?.metric === 'time' ? 'number' : 'text'}
-                  min={editingExercise?.metric === 'time' ? '1' : undefined}
-                  step={editingExercise?.metric === 'time' ? '1' : undefined}
-                  required
-                  defaultValue={editingSet.reps}
-                />
+                {editingExercise?.metric === 'time' ? 'Tempo' : 'Repetições'}
+                <input autoFocus name="reps" type="text" required defaultValue={editingSet.reps} />
               </label>
               <label>
                 Carga (kg)

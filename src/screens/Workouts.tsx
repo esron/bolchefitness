@@ -54,7 +54,7 @@ function ExerciseForm({
       setTargets((rows) =>
         Array.from(
           { length: n },
-          (_, i) => rows[i] ?? { value: metric === 'time' ? '30' : '8–12', load: '0' }
+          (_, i) => rows[i] ?? { value: metric === 'time' ? '1 minuto' : '8–12', load: '0' }
         )
       );
   };
@@ -69,14 +69,10 @@ function ExerciseForm({
         const sets = Number(count);
         const invalidTarget = targets.slice(0, sets).some((target) => {
           const value = target.value.trim();
-          return !value || (metric === 'time' && (!/^\d+$/.test(value) || Number(value) < 1));
+          return !value;
         });
         if (!name || !Number.isSafeInteger(sets) || sets < 1 || sets > 100 || invalidTarget) {
-          onError(
-            metric === 'time'
-              ? 'Preencha o nome e informe um tempo em segundos para cada série. Use de 1 a 100 séries.'
-              : 'Preencha o nome e a meta de cada série. Use de 1 a 100 séries.'
-          );
+          onError('Preencha o nome e a meta de cada série. Use de 1 a 100 séries.');
           return;
         }
         const value: Exercise = {
@@ -126,13 +122,8 @@ function ExerciseForm({
             onChange={(e) => {
               const nextMetric = e.target.value as ExerciseMetric;
               setMetric(nextMetric);
-              if (nextMetric === 'time')
-                setTargets((rows) =>
-                  rows.map((row) => ({
-                    ...row,
-                    value: /^[1-9]\d*$/.test(row.value) ? row.value : '30',
-                  }))
-                );
+              if (nextMetric === 'time' && metric !== 'time')
+                setTargets((rows) => rows.map((row) => ({ ...row, value: '1 minuto' })));
             }}
           >
             <option value="reps">Repetições</option>
@@ -145,16 +136,13 @@ function ExerciseForm({
           <div className="target-editor-row" key={index}>
             <strong>Série {index + 1}</strong>
             <label>
-              {metric === 'time' ? 'Tempo (segundos)' : 'Repetições'}
+              {metric === 'time' ? 'Tempo' : 'Repetições'}
               <input
-                aria-label={`${metric === 'time' ? 'Tempo (segundos)' : 'Repetições'}${index === 0 ? '' : `, série ${index + 1}`}`}
-                type={metric === 'time' ? 'number' : 'text'}
-                inputMode={metric === 'time' ? 'numeric' : undefined}
-                min={metric === 'time' ? '1' : undefined}
-                step={metric === 'time' ? '1' : undefined}
+                aria-label={`${metric === 'time' ? 'Tempo' : 'Repetições'}${index === 0 ? '' : `, série ${index + 1}`}`}
+                type="text"
                 required
                 value={target.value}
-                placeholder={metric === 'time' ? '30' : '8–12'}
+                placeholder={metric === 'time' ? '1 minuto' : '8–12'}
                 onChange={(e) => updateTarget(index, { value: e.target.value })}
               />
             </label>
@@ -175,7 +163,7 @@ function ExerciseForm({
       </div>
       <p className="muted small">
         {metric === 'time'
-          ? 'Informe a duração em segundos. Deixe a carga em 0 para exercícios sem peso.'
+          ? 'Informe o tempo como preferir, por exemplo “1 minuto” ou “30 a 40 minutos”. Deixe a carga em 0 para exercícios sem peso.'
           : 'Defina repetições e carga para cada série. Use 0 kg para exercícios sem peso.'}
       </p>
       {error && (
@@ -436,7 +424,7 @@ export function Workouts({
                           )
                             .map((target) => target.value)
                             .join(' / ')}{' '}
-                          {e.metric === 'time' ? 's' : 'reps'} <span>·</span> cargas por série
+                          {e.metric === 'time' ? 'tempo' : 'reps'} <span>·</span> cargas por série
                         </p>
                       </div>
                       <div className="actions">
