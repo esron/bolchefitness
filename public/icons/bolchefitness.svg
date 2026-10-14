@@ -2,7 +2,14 @@
   <rect width="512" height="512" rx="112" fill="#100C0D"/>
   <circle cx="256" cy="256" r="183" fill="#C92232" stroke="#FFD166" stroke-width="16"/>
   <circle cx="256" cy="256" r="145" fill="none" stroke="#941D29" stroke-width="14"/>
-  <path d="M150 365 286 229" fill="none" stroke="#FFD166" stroke-width="29" stroke-linecap="round"/>
-  <path d="M163 352c-57-67-41-164 32-218 59-43 137-41 201 5-68-18-130 13-164 68-35 56-30 111 10 155-29 5-58 1-79-10Z" fill="#FFD166"/>
-  <circle cx="256" cy="256" r="52" fill="#100C0D" stroke="#FFD166" stroke-width="15"/>
+  <g transform="rotate(-45 256 256)" fill="#FFD166" stroke="#100C0D" stroke-width="13" stroke-linejoin="round">
+    <rect x="99" y="200" width="38" height="112" rx="9"/>
+    <rect x="145" y="218" width="27" height="76" rx="7"/>
+    <rect x="170" y="245" width="172" height="22" rx="11"/>
+    <rect x="340" y="218" width="27" height="76" rx="7"/>
+    <rect x="375" y="200" width="38" height="112" rx="9"/>
+  </g>
+  <path d="m357 358-90-91" fill="none" stroke="#100C0D" stroke-width="43" stroke-linecap="round"/>
+  <path d="m357 358-90-91" fill="none" stroke="#FFD166" stroke-width="25" stroke-linecap="round"/>
+  <path d="M269 270c-51-43-83-93-79-130 5-48 45-76 93-75 42 1 79 25 98 59-36-23-79-23-107-3-33 24-42 61-26 96 6 15 16 30 30 45-3 6-5 9-9 12Z" fill="#FFD166" stroke="#100C0D" stroke-width="13" stroke-linejoin="round"/>
 </svg>
