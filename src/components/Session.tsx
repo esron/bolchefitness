@@ -3,6 +3,9 @@ import { Check, ChevronDown, ChevronUp, Flag, Trash2, Timer, Pencil } from 'luci
 import {
   totals,
   toggleSet,
+  setSetDone,
+  updateSession,
+  discardSession,
   finishSession,
   type Session as SessionData,
   type PerformedExercise,
@@ -16,10 +19,7 @@ export function Session({ session, tracker }: { session: SessionData; tracker: T
   const [editing, setEditing] = useState<{ exerciseId: string; index: number } | null>(null);
   const [finish, setFinish] = useState(false);
   const mutate = (fn: (s: SessionData) => SessionData) =>
-    update((state) => ({
-      ...state,
-      sessions: state.sessions.map((s) => (s.id === session.id ? fn(s) : s)),
-    }));
+    update((state) => updateSession(state, session.id, fn));
   const editingSet = editing
     ? session.exercises.find((e) => e.id === editing.exerciseId)?.sets[editing.index]
     : undefined;
@@ -126,9 +126,10 @@ export function Session({ session, tracker }: { session: SessionData; tracker: T
                           aria-label={`${exercise.name}, série ${i + 1}`}
                           checked={set.done}
                           disabled={pending}
-                          onChange={() =>
-                            void mutate((s) => toggleSet(s, exercise.id, i, new Date()))
-                          }
+                          onChange={(event) => {
+                            const done = event.currentTarget.checked;
+                            void mutate((s) => setSetDone(s, exercise.id, i, done, new Date()));
+                          }}
                         />
                         <span>
                           <Check size={19} />
@@ -174,10 +175,7 @@ export function Session({ session, tracker }: { session: SessionData; tracker: T
                 'Descartar este treino em andamento? As marcações desta sessão serão apagadas.'
               )
             )
-              void update((s) => ({
-                ...s,
-                sessions: s.sessions.filter((item) => item.id !== session.id),
-              }));
+              void update((s) => discardSession(s, session.id));
           }}
         >
           <Trash2 size={15} />

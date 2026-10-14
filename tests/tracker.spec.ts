@@ -254,3 +254,24 @@ test('nova versão espera pelo fim da sessão e conserva progresso', async ({ pa
     await writeFile('dist/sw.js', original);
   }
 });
+
+test('troca a sequência ativa e persiste a seleção', async ({ page }) => {
+  await page.goto('./');
+  await page.getByRole('button', { name: 'Criar minha sequência' }).click();
+  await page.getByLabel('Nome da sequência').fill('Primeira rotina');
+  await page.getByRole('button', { name: 'Criar sequência', exact: true }).click();
+  await expect(page.getByRole('dialog')).not.toBeVisible();
+  const first = await page.getByLabel('Sequência ativa').inputValue();
+  await page.getByRole('button', { name: 'Nova sequência' }).click();
+  await page.getByLabel('Nome da sequência').fill('Segunda rotina');
+  await page.getByRole('button', { name: 'Criar sequência', exact: true }).click();
+  await expect(page.getByRole('dialog')).not.toBeVisible();
+  await page.getByLabel('Sequência ativa').selectOption(first);
+  await expect(page.getByLabel('Sequência ativa')).toHaveValue(first);
+  await page.reload();
+  await page
+    .getByRole('navigation', { name: 'Navegação no celular' })
+    .getByRole('button', { name: 'Treinos', exact: true })
+    .click();
+  await expect(page.getByLabel('Sequência ativa')).toHaveValue(first);
+});

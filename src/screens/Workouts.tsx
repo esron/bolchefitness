@@ -15,6 +15,7 @@ import {
   createSequence,
   createWorkout,
   removeWorkout,
+  moveById,
   uid,
   type Exercise,
   type Sequence,
@@ -60,12 +61,8 @@ export function Workouts({
         w = createWorkout(++index);
       return { ...seq, workouts: [...seq.workouts, w] };
     });
-  const moveExercise = (index: number, delta: number) =>
-    changeWorkout((w) => {
-      const exercises = [...w.exercises];
-      [exercises[index], exercises[index + delta]] = [exercises[index + delta], exercises[index]];
-      return { ...w, exercises };
-    });
+  const moveExercise = (id: string, delta: -1 | 1) =>
+    changeWorkout((w) => ({ ...w, exercises: moveById(w.exercises, id, delta) }));
   const closeCreate = () => {
     setCreate(false);
     onCreated();
@@ -113,9 +110,10 @@ export function Workouts({
                       aria-label="Sequência ativa"
                       value={sequence.id}
                       disabled={pending}
-                      onChange={(e) =>
-                        void update((s) => ({ ...s, selectedSequenceId: e.target.value }))
-                      }
+                      onChange={(e) => {
+                        const id = e.currentTarget.value;
+                        void update((s) => ({ ...s, selectedSequenceId: id }));
+                      }}
                     >
                       {state.sequences.map((s) => (
                         <option key={s.id} value={s.id}>
@@ -189,14 +187,10 @@ export function Workouts({
                         aria-label={`Mover treino ${w.label} para cima`}
                         disabled={pending || index === 0}
                         onClick={() =>
-                          void changeSequence((seq) => {
-                            const workouts = [...seq.workouts];
-                            [workouts[index], workouts[index - 1]] = [
-                              workouts[index - 1],
-                              workouts[index],
-                            ];
-                            return { ...seq, workouts };
-                          })
+                          void changeSequence((seq) => ({
+                            ...seq,
+                            workouts: moveById(seq.workouts, w.id, -1),
+                          }))
                         }
                       >
                         <ArrowUp size={16} />
@@ -206,14 +200,10 @@ export function Workouts({
                         aria-label={`Mover treino ${w.label} para baixo`}
                         disabled={pending || index === sequence.workouts.length - 1}
                         onClick={() =>
-                          void changeSequence((seq) => {
-                            const workouts = [...seq.workouts];
-                            [workouts[index], workouts[index + 1]] = [
-                              workouts[index + 1],
-                              workouts[index],
-                            ];
-                            return { ...seq, workouts };
-                          })
+                          void changeSequence((seq) => ({
+                            ...seq,
+                            workouts: moveById(seq.workouts, w.id, 1),
+                          }))
                         }
                       >
                         <ArrowDown size={16} />
@@ -286,7 +276,7 @@ export function Workouts({
                           className="icon-button"
                           aria-label={`Subir ${e.name}`}
                           disabled={pending || index === 0}
-                          onClick={() => void moveExercise(index, -1)}
+                          onClick={() => void moveExercise(e.id, -1)}
                         >
                           <ArrowUp size={17} />
                         </button>
@@ -294,7 +284,7 @@ export function Workouts({
                           className="icon-button"
                           aria-label={`Descer ${e.name}`}
                           disabled={pending || index === workout.exercises.length - 1}
-                          onClick={() => void moveExercise(index, 1)}
+                          onClick={() => void moveExercise(e.id, 1)}
                         >
                           <ArrowDown size={17} />
                         </button>

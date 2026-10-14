@@ -9,6 +9,10 @@ import {
   localDay,
   validateBackup,
   emptyState,
+  setSetDone,
+  discardSession,
+  updateSession,
+  moveById,
 } from '../src/domain';
 function fixture() {
   const sequence = createSequence('Rotina', 6);
@@ -118,4 +122,41 @@ it('rejeita conclusão antes do início ou depois do encerramento da sessão', (
     bad.sessions[0].exercises[0].completedAt = time;
     expect(() => validateBackup(bad)).toThrow();
   }
+});
+
+it('marcações concorrentes são idempotentes e preservam a data de conclusão', () => {
+  const seq = fixture();
+  let session = startSession(seq, seq.nextWorkoutId, new Date('2026-10-14T10:00:00Z'));
+  session = setSetDone(session, 'ex', 0, true, new Date('2026-10-14T10:01:00Z'));
+  session = setSetDone(session, 'ex', 0, true, new Date('2026-10-14T10:02:00Z'));
+  expect(session.exercises[0].sets[0].done).toBe(true);
+  for (let i = 1; i < 3; i++)
+    session = setSetDone(session, 'ex', i, true, new Date('2026-10-14T10:03:00Z'));
+  const done = session.exercises[0].completedAt;
+  session = setSetDone(session, 'ex', 2, true, new Date('2026-10-14T10:04:00Z'));
+  expect(session.exercises[0].completedAt).toBe(done);
+});
+it('não permite descartar nem editar uma sessão já encerrada por outra aba', () => {
+  const seq = fixture();
+  const session = startSession(seq, seq.nextWorkoutId, new Date());
+  const state = {
+    ...emptyState(),
+    sequences: [seq],
+    selectedSequenceId: seq.id,
+    sessions: [session],
+  };
+  const finished = finishSession(state, session.id, new Date());
+  expect(() => discardSession(finished, session.id)).toThrow();
+  expect(() =>
+    updateSession(finished, session.id, (s) => ({ ...s, workoutName: 'Alterado' }))
+  ).toThrow();
+  expect(finished.sessions).toHaveLength(1);
+  expect(discardSession(state, session.id).sessions).toHaveLength(0);
+});
+it('reordena pelo ID atual e revalida os limites', () => {
+  const initial = [{ id: 'a' }, { id: 'b' }, { id: 'c' }];
+  const moved = moveById(initial, 'b', -1);
+  expect(moved.map((x) => x.id)).toEqual(['b', 'a', 'c']);
+  expect(moveById(moved, 'b', -1).map((x) => x.id)).toEqual(['b', 'a', 'c']);
+  expect(moveById(moved, 'b', 1).map((x) => x.id)).toEqual(['a', 'b', 'c']);
 });

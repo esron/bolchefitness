@@ -89,20 +89,23 @@ export function startSession(sequence: Sequence, workoutId: string, now: Date): 
     })),
   };
 }
-export function toggleSet(
+export function setSetDone(
   session: Session,
   exerciseId: string,
   setIndex: number,
+  done: boolean,
   now: Date
 ): Session {
   if (session.endedAt) throw new Error('Este treino já foi encerrado.');
+  const exercise = session.exercises.find((e) => e.id === exerciseId);
+  if (!exercise?.sets[setIndex]) throw new Error('Série não encontrada.');
+  if (exercise.sets[setIndex].done === done) return session;
   return {
     ...session,
     exercises: session.exercises.map((e) => {
       if (e.id !== exerciseId) return e;
-      if (!e.sets[setIndex]) throw new Error('Série não encontrada.');
-      const sets = e.sets.map((s, i) => (i === setIndex ? { ...s, done: !s.done } : s));
-      const complete = sets.every((s) => s.done);
+      const sets = e.sets.map((set, i) => (i === setIndex ? { ...set, done } : set));
+      const complete = sets.every((set) => set.done);
       return {
         ...e,
         sets,
@@ -111,6 +114,39 @@ export function toggleSet(
       };
     }),
   };
+}
+export function toggleSet(
+  session: Session,
+  exerciseId: string,
+  setIndex: number,
+  now: Date
+): Session {
+  const set = session.exercises.find((e) => e.id === exerciseId)?.sets[setIndex];
+  if (!set) throw new Error('Série não encontrada.');
+  return setSetDone(session, exerciseId, setIndex, !set.done, now);
+}
+export function updateSession(
+  state: State,
+  id: string,
+  change: (session: Session) => Session
+): State {
+  const session = state.sessions.find((s) => s.id === id);
+  if (!session || session.endedAt)
+    throw new Error('Este treino foi encerrado ou descartado em outra aba.');
+  return { ...state, sessions: state.sessions.map((s) => (s.id === id ? change(s) : s)) };
+}
+export function discardSession(state: State, id: string): State {
+  updateSession(state, id, (s) => s);
+  return { ...state, sessions: state.sessions.filter((s) => s.id !== id) };
+}
+export function moveById<T extends { id: string }>(items: T[], id: string, delta: -1 | 1): T[] {
+  const index = items.findIndex((item) => item.id === id);
+  if (index < 0) throw new Error('Item não encontrado.');
+  const next = index + delta;
+  if (next < 0 || next >= items.length) return items;
+  const reordered = [...items];
+  [reordered[index], reordered[next]] = [reordered[next], reordered[index]];
+  return reordered;
 }
 export function finishSession(state: State, sessionId: string, now: Date): State {
   const session = state.sessions.find((s) => s.id === sessionId);
