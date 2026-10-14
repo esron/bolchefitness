@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState } from 'react';
 import {
   Plus,
   ChevronRight,
@@ -18,11 +18,179 @@ import {
   moveById,
   uid,
   type Exercise,
+  type ExerciseMetric,
   type Sequence,
   type Workout,
 } from '../domain';
 import { type Tracker } from '../useTracker';
 import { Modal, Empty, PageHeading } from '../components/UI';
+type TargetDraft = { value: string; load: string };
+
+function ExerciseForm({
+  exercise,
+  pending,
+  error,
+  onError,
+  onSave,
+}: {
+  exercise: Exercise | null;
+  pending: boolean;
+  error: string;
+  onError: (message: string) => void;
+  onSave: (value: Exercise) => Promise<void>;
+}) {
+  const [metric, setMetric] = useState<ExerciseMetric>(exercise?.metric ?? 'reps');
+  const [count, setCount] = useState(String(exercise?.sets ?? 3));
+  const [targets, setTargets] = useState<TargetDraft[]>(() =>
+    Array.from({ length: exercise?.sets ?? 3 }, (_, i) => ({
+      value: exercise?.setTargets?.[i]?.value ?? exercise?.reps ?? '8–12',
+      load: String(exercise?.setTargets?.[i]?.load ?? exercise?.load ?? 0),
+    }))
+  );
+  const handleCountChange = (value: string) => {
+    setCount(value);
+    const n = Number(value);
+    if (Number.isSafeInteger(n) && n > 0 && n <= 100)
+      setTargets((rows) =>
+        Array.from(
+          { length: n },
+          (_, i) => rows[i] ?? { value: metric === 'time' ? '30' : '8–12', load: '0' }
+        )
+      );
+  };
+  const updateTarget = (index: number, change: Partial<TargetDraft>) =>
+    setTargets((rows) => rows.map((row, i) => (i === index ? { ...row, ...change } : row)));
+  return (
+    <form
+      onSubmit={(event) => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        const name = String(data.get('name')).trim();
+        const sets = Number(count);
+        const invalidTarget = targets.slice(0, sets).some((target) => {
+          const value = target.value.trim();
+          return !value || (metric === 'time' && (!/^\d+$/.test(value) || Number(value) < 1));
+        });
+        if (!name || !Number.isSafeInteger(sets) || sets < 1 || sets > 100 || invalidTarget) {
+          onError(
+            metric === 'time'
+              ? 'Preencha o nome e informe um tempo em segundos para cada série. Use de 1 a 100 séries.'
+              : 'Preencha o nome e a meta de cada série. Use de 1 a 100 séries.'
+          );
+          return;
+        }
+        const value: Exercise = {
+          id: exercise?.id ?? uid(),
+          name,
+          sets,
+          metric,
+          setTargets: targets.slice(0, sets).map((target) => ({
+            value: target.value.trim(),
+            load: Number(target.load) || 0,
+          })),
+          reps: targets[0].value.trim(),
+          load: Number(targets[0].load) || 0,
+        };
+        void onSave(value);
+      }}
+    >
+      <label>
+        Nome do exercício
+        <input
+          autoFocus
+          name="name"
+          required
+          defaultValue={exercise?.name}
+          placeholder="Ex.: Agachamento livre"
+        />
+      </label>
+      <div className="form-row two">
+        <label>
+          Séries
+          <input
+            name="sets"
+            type="number"
+            min="1"
+            max="100"
+            step="1"
+            required
+            value={count}
+            onChange={(e) => handleCountChange(e.target.value)}
+          />
+        </label>
+        <label>
+          Registrar por
+          <select
+            aria-label="Registrar por"
+            value={metric}
+            onChange={(e) => {
+              const nextMetric = e.target.value as ExerciseMetric;
+              setMetric(nextMetric);
+              if (nextMetric === 'time')
+                setTargets((rows) =>
+                  rows.map((row) => ({
+                    ...row,
+                    value: /^[1-9]\d*$/.test(row.value) ? row.value : '30',
+                  }))
+                );
+            }}
+          >
+            <option value="reps">Repetições</option>
+            <option value="time">Tempo</option>
+          </select>
+        </label>
+      </div>
+      <div className="target-editor">
+        {targets.slice(0, Number(count) || 0).map((target, index) => (
+          <div className="target-editor-row" key={index}>
+            <strong>Série {index + 1}</strong>
+            <label>
+              {metric === 'time' ? 'Tempo (segundos)' : 'Repetições'}
+              <input
+                aria-label={`${metric === 'time' ? 'Tempo (segundos)' : 'Repetições'}${index === 0 ? '' : `, série ${index + 1}`}`}
+                type={metric === 'time' ? 'number' : 'text'}
+                inputMode={metric === 'time' ? 'numeric' : undefined}
+                min={metric === 'time' ? '1' : undefined}
+                step={metric === 'time' ? '1' : undefined}
+                required
+                value={target.value}
+                placeholder={metric === 'time' ? '30' : '8–12'}
+                onChange={(e) => updateTarget(index, { value: e.target.value })}
+              />
+            </label>
+            <label>
+              Carga (kg){index === 0 ? '' : `, série ${index + 1}`}
+              <input
+                aria-label={`Carga (kg)${index === 0 ? '' : `, série ${index + 1}`}`}
+                type="number"
+                inputMode="decimal"
+                min="0"
+                step="any"
+                value={target.load}
+                onChange={(e) => updateTarget(index, { load: e.target.value })}
+              />
+            </label>
+          </div>
+        ))}
+      </div>
+      <p className="muted small">
+        {metric === 'time'
+          ? 'Informe a duração em segundos. Deixe a carga em 0 para exercícios sem peso.'
+          : 'Defina repetições e carga para cada série. Use 0 kg para exercícios sem peso.'}
+      </p>
+      {error && (
+        <p role="alert" className="form-error">
+          {error}
+        </p>
+      )}
+      <button className="primary full" disabled={pending}>
+        <Check size={18} />
+        Salvar exercício
+      </button>
+    </form>
+  );
+}
+
 export function Workouts({
   tracker,
   createRequested,
@@ -261,7 +429,14 @@ export function Workouts({
                       <div className="exercise-info">
                         <h3>{e.name}</h3>
                         <p>
-                          {e.sets} séries <span>·</span> {e.reps} reps <span>·</span> {e.load} kg
+                          {e.sets} séries <span>·</span>{' '}
+                          {(
+                            e.setTargets ??
+                            Array.from({ length: e.sets }, () => ({ value: e.reps, load: e.load }))
+                          )
+                            .map((target) => target.value)
+                            .join(' / ')}{' '}
+                          {e.metric === 'time' ? 's' : 'reps'} <span>·</span> cargas por série
                         </p>
                       </div>
                       <div className="actions">
@@ -348,30 +523,12 @@ export function Workouts({
             setFormError('');
           }}
         >
-          <form
-            onSubmit={async (e: FormEvent<HTMLFormElement>) => {
-              e.preventDefault();
-              const data = new FormData(e.currentTarget);
-              const value: Exercise = {
-                id: exercise?.id ?? uid(),
-                name: String(data.get('name')).trim(),
-                sets: Number(data.get('sets')),
-                reps: String(data.get('reps')).trim(),
-                load: Number(data.get('load')),
-              };
-              if (
-                !value.name ||
-                !value.reps ||
-                !Number.isSafeInteger(value.sets) ||
-                value.sets < 1 ||
-                !Number.isFinite(value.load) ||
-                value.load < 0
-              ) {
-                setFormError(
-                  'Preencha nome e repetições. Séries devem ser inteiras e a carga não pode ser negativa.'
-                );
-                return;
-              }
+          <ExerciseForm
+            exercise={exercise}
+            pending={pending}
+            error={formError}
+            onError={setFormError}
+            onSave={async (value) => {
               if (
                 await changeWorkout((w) => ({
                   ...w,
@@ -384,62 +541,7 @@ export function Workouts({
                 setFormError('');
               }
             }}
-          >
-            <label>
-              Nome do exercício
-              <input
-                autoFocus
-                name="name"
-                required
-                defaultValue={exercise?.name}
-                placeholder="Ex.: Agachamento livre"
-              />
-            </label>
-            <div className="form-row">
-              <label>
-                Séries
-                <input
-                  name="sets"
-                  type="number"
-                  min="1"
-                  step="1"
-                  required
-                  defaultValue={exercise?.sets ?? 3}
-                />
-              </label>
-              <label>
-                Repetições
-                <input
-                  name="reps"
-                  required
-                  defaultValue={exercise?.reps ?? '8–12'}
-                  placeholder="8–12"
-                />
-              </label>
-              <label>
-                Carga (kg)
-                <input
-                  name="load"
-                  type="number"
-                  inputMode="decimal"
-                  min="0"
-                  step="any"
-                  required
-                  defaultValue={exercise?.load ?? 0}
-                />
-              </label>
-            </div>
-            <p className="muted small">Use 0 kg para exercícios sem carga adicional.</p>
-            {formError && (
-              <p role="alert" className="form-error">
-                {formError}
-              </p>
-            )}
-            <button className="primary full" disabled={pending}>
-              <Check size={18} />
-              Salvar exercício
-            </button>
-          </form>
+          />
         </Modal>
       )}
       {renaming && sequence && (

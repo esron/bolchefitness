@@ -123,7 +123,9 @@ export function Calendar({ tracker }: { tracker: Tracker }) {
                       <div key={i}>
                         <span>Série {i + 1}</span>
                         <strong>
-                          {set.reps} reps <span>·</span> {set.load} kg
+                          {set.reps}
+                          {e.metric === 'time' ? ' s' : ' reps'} <span>·</span>{' '}
+                          {set.load > 0 ? `${set.load} kg` : 'Sem carga'}
                         </strong>
                       </div>
                     ))}
@@ -154,7 +156,9 @@ export function Calendar({ tracker }: { tracker: Tracker }) {
                       {e.sets.map((set, i) =>
                         set.done ? (
                           <p key={i}>
-                            Série {i + 1}: {set.reps} reps · {set.load} kg
+                            Série {i + 1}: {set.reps}
+                            {e.metric === 'time' ? ' s' : ' reps'} ·{' '}
+                            {set.load > 0 ? `${set.load} kg` : 'Sem carga'}
                           </p>
                         ) : null
                       )}

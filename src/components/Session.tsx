@@ -28,6 +28,9 @@ export function Session({ session, tracker }: { session: SessionData; tracker: T
   const editingSet = editing
     ? session.exercises.find((e) => e.id === editing.exerciseId)?.sets[editing.index]
     : undefined;
+  const editingExercise = editing
+    ? session.exercises.find((e) => e.id === editing.exerciseId)
+    : undefined;
   const completed = session.exercises.filter((e) => e.completedAt).length;
   const end = async () => {
     if (await update((s) => finishSession(s, session.id, new Date()))) setFinish(false);
@@ -109,20 +112,29 @@ export function Session({ session, tracker }: { session: SessionData; tracker: T
                 <div className="sets-area">
                   <div className="set-labels">
                     <span>SÉRIE</span>
-                    <span>REPS</span>
+                    <span>{exercise.metric === 'time' ? 'TEMPO' : 'REPS'}</span>
                     <span>CARGA</span>
                     <span>FEITO</span>
                   </div>
                   {exercise.sets.map((set, i) => (
                     <div className={`set-row ${set.done ? 'done' : ''}`} key={i}>
                       <span className="set-number">{i + 1}</span>
-                      <span>{set.reps}</span>
+                      <span>
+                        {set.reps}
+                        {exercise.metric === 'time' ? ' s' : ''}
+                      </span>
                       <button
                         className="load-button"
                         aria-label={`Editar ${exercise.name}, série ${i + 1}`}
                         onClick={() => setEditing({ exerciseId: exercise.id, index: i })}
                       >
-                        {set.load} <small>kg</small>
+                        {set.load > 0 ? (
+                          <>
+                            {set.load} <small>kg</small>
+                          </>
+                        ) : (
+                          <small>Sem carga</small>
+                        )}
                         <Pencil size={12} />
                       </button>
                       <label className="check-container">
@@ -205,8 +217,15 @@ export function Session({ session, tracker }: { session: SessionData; tracker: T
               e.preventDefault();
               const data = new FormData(e.currentTarget);
               const reps = String(data.get('reps')).trim();
-              const load = Number(data.get('load'));
-              if (!reps || !Number.isFinite(load) || load < 0) return;
+              const rawLoad = String(data.get('load')).trim();
+              const load = rawLoad ? Number(rawLoad) : 0;
+              if (
+                !reps ||
+                (editingExercise?.metric === 'time' && (!/^\d+$/.test(reps) || Number(reps) < 1)) ||
+                !Number.isFinite(load) ||
+                load < 0
+              )
+                return;
               const saved = await mutate((s) => ({
                 ...s,
                 exercises: s.exercises.map((ex) =>
@@ -225,8 +244,16 @@ export function Session({ session, tracker }: { session: SessionData; tracker: T
           >
             <div className="form-row two">
               <label>
-                Repetições
-                <input autoFocus name="reps" required defaultValue={editingSet.reps} />
+                {editingExercise?.metric === 'time' ? 'Tempo (segundos)' : 'Repetições'}
+                <input
+                  autoFocus
+                  name="reps"
+                  type={editingExercise?.metric === 'time' ? 'number' : 'text'}
+                  min={editingExercise?.metric === 'time' ? '1' : undefined}
+                  step={editingExercise?.metric === 'time' ? '1' : undefined}
+                  required
+                  defaultValue={editingSet.reps}
+                />
               </label>
               <label>
                 Carga (kg)
@@ -235,12 +262,14 @@ export function Session({ session, tracker }: { session: SessionData; tracker: T
                   type="number"
                   min="0"
                   step="any"
-                  required
-                  defaultValue={editingSet.load}
+                  defaultValue={editingSet.load || ''}
                 />
               </label>
             </div>
-            <p className="muted small">Esta alteração vale apenas para a série deste treino.</p>
+            <p className="muted small">
+              Esta alteração vale apenas para esta série. Deixe a carga vazia para registrar sem
+              peso.
+            </p>
             <button className="primary full" disabled={pending}>
               Salvar série
             </button>

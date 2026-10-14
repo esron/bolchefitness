@@ -998,6 +998,34 @@ main {
 .load-button svg {
   color: #72806d;
 }
+.target-editor {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0 8px;
+}
+.target-editor-row {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
+  align-items: end;
+  padding: 12px;
+  border: 1px solid #2b332a;
+  border-radius: 12px;
+  background: #151b15;
+}
+.target-editor-row > strong {
+  align-self: center;
+  font-size: 12px;
+  color: var(--muted);
+}
+.target-editor-row label {
+  min-width: 0;
+  font-size: 11px;
+}
+.target-editor-row input {
+  min-width: 0;
+  padding: 10px 9px;
+}
 .check-container {
   display: flex;
   align-items: center;

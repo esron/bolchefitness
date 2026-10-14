@@ -1,9 +1,13 @@
+export type ExerciseMetric = 'reps' | 'time';
+export type SetTarget = { value: string; load: number };
 export type Exercise = {
   id: string;
   name: string;
   sets: number;
   reps: string;
   load: number;
+  metric?: ExerciseMetric;
+  setTargets?: SetTarget[];
   restSeconds?: number;
 };
 export type Workout = { id: string; label: string; name: string; exercises: Exercise[] };
@@ -15,6 +19,7 @@ export type PerformedExercise = {
   sets: PerformedSet[];
   completedAt: string | null;
   completedDay: string | null;
+  metric?: ExerciseMetric;
   restSeconds?: number;
   restEndsAt?: number | null;
 };
@@ -92,9 +97,14 @@ export function startSession(sequence: Sequence, workoutId: string, now: Date): 
     exercises: workout.exercises.map((e) => ({
       id: e.id,
       name: e.name,
-      sets: Array.from({ length: e.sets }, () => ({ reps: e.reps, load: e.load, done: false })),
+      sets: Array.from({ length: e.sets }, (_, i) => ({
+        reps: e.setTargets?.[i]?.value ?? e.reps,
+        load: e.setTargets?.[i]?.load ?? e.load,
+        done: false,
+      })),
       completedAt: null,
       completedDay: null,
+      ...(e.metric === undefined ? {} : { metric: e.metric }),
       ...(e.restSeconds === undefined ? {} : { restSeconds: e.restSeconds }),
     })),
   };
@@ -216,6 +226,12 @@ export function validateBackup(value: unknown): State {
     }
     return result;
   };
+  const metricField = (e: Record<string, unknown>): { metric?: ExerciseMetric } => {
+    const metric = e.metric;
+    if (metric === undefined) return {};
+    if (metric !== 'reps' && metric !== 'time') return invalid();
+    return { metric };
+  };
   const root = obj(value);
   if (root.version !== 1) invalid();
   const sequences: Sequence[] = arr(root.sequences).map((v) => {
@@ -226,12 +242,22 @@ export function validateBackup(value: unknown): State {
         const e = obj(v);
         const sets = num(e.sets);
         if (!Number.isSafeInteger(sets) || sets < 1) invalid();
+        const setTargets =
+          e.setTargets === undefined
+            ? undefined
+            : arr(e.setTargets).map((target) => {
+                const t = obj(target);
+                return { value: str(t.value), load: num(t.load) };
+              });
+        if (setTargets && setTargets.length !== sets) invalid();
         return {
           id: str(e.id),
           name: str(e.name),
           sets,
           reps: str(e.reps),
           load: num(e.load),
+          ...metricField(e),
+          ...(setTargets === undefined ? {} : { setTargets }),
           ...restFields(e),
         };
       });
@@ -282,6 +308,7 @@ export function validateBackup(value: unknown): State {
         id: str(e.id),
         name: str(e.name),
         sets,
+        ...metricField(e),
         completedAt,
         completedDay,
         ...restFields(e, true),
