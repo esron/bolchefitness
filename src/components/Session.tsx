@@ -12,10 +12,14 @@ import {
 } from '../domain';
 import { type Tracker } from '../useTracker';
 import { Modal } from './UI';
+import { RestTimer } from './RestTimer';
+import { startRest, cancelRest } from '../rest';
 export function Session({ session, tracker }: { session: SessionData; tracker: Tracker }) {
   const { update, pending } = tracker;
   const progress = totals(session);
-  const [collapsed, setCollapsed] = useState<string[]>([]);
+  const [collapsed, setCollapsed] = useState<string[]>(() =>
+    session.exercises.slice(1).map((e) => e.id)
+  );
   const [editing, setEditing] = useState<{ exerciseId: string; index: number } | null>(null);
   const [finish, setFinish] = useState(false);
   const mutate = (fn: (s: SessionData) => SessionData) =>
@@ -148,6 +152,16 @@ export function Session({ session, tracker }: { session: SessionData; tracker: T
                       Concluir todas as séries
                     </button>
                   )}
+                  <RestTimer
+                    exercise={exercise}
+                    pending={pending}
+                    onStart={(seconds) =>
+                      update((state) =>
+                        startRest(state, session.id, exercise.id, seconds, Date.now())
+                      )
+                    }
+                    onCancel={() => update((state) => cancelRest(state, session.id, exercise.id))}
+                  />
                 </div>
               )}
             </article>

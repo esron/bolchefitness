@@ -1986,3 +1986,75 @@ dialog::backdrop {
 .modal-error {
   margin-bottom: 18px;
 }
+.rest-timer {
+  gap: 9px;
+  border-top: 1px solid var(--line);
+  margin-top: 14px;
+  padding-top: 14px;
+}
+.rest-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.rest-title svg {
+  color: var(--green);
+}
+.rest-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.rest-duration {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 10px;
+}
+.rest-duration input {
+  width: 66px;
+  padding: 9px 8px;
+  min-height: 44px;
+  text-align: center;
+  font-size: 12px;
+}
+.rest-clock {
+  font-size: 24px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+.rest-controls .secondary {
+  min-height: 44px;
+  font-size: 11px;
+  padding: 10px 12px;
+  gap: 5px;
+}
+.rest-complete .rest-clock,
+.rest-done {
+  color: var(--green);
+}
+.rest-done {
+  font-size: 11px;
+}
+@media (max-width: 360px) {
+  .rest-controls {
+    gap: 7px;
+  }
+  .rest-controls .secondary {
+    padding: 10px 8px;
+  }
+  .rest-clock {
+    font-size: 21px;
+  }
+  .rest-duration input {
+    width: 56px;
+  }
+}

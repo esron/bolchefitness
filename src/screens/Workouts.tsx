@@ -376,7 +376,7 @@ export function Workouts({
                 await changeWorkout((w) => ({
                   ...w,
                   exercises: exercise
-                    ? w.exercises.map((ex) => (ex.id === exercise.id ? value : ex))
+                    ? w.exercises.map((ex) => (ex.id === exercise.id ? { ...ex, ...value } : ex))
                     : [...w.exercises, value],
                 }))
               ) {

@@ -6,7 +6,7 @@ PWA mobile first para organizar treinos de academia, acompanhar séries e consul
 
 1. Crie uma sequência: AB, ABC e ABCD são sugestões; Personalizada aceita qualquer quantidade positiva de fichas.
 2. Adicione exercícios com séries, repetições (como `8–12`) e carga em kg. Use zero para exercícios sem carga adicional.
-3. Inicie o treino e marque cada série. Você pode ajustar cargas e repetições de cada série durante a execução. O progresso é salvo imediatamente e retomado ao reabrir.
+3. Inicie o treino e marque cada série. Apenas o primeiro exercício começa expandido. Dentro de cada exercício há um descanso manual: ajuste os segundos e toque em Iniciar; Cancelar interrompe a contagem. A duração é salva ao iniciar, e o temporizador continua ao trocar de tela ou reabrir o aplicativo. Você pode ajustar cargas e repetições de cada série durante a execução. O progresso é salvo imediatamente e retomado ao reabrir.
 4. Consulte os exercícios concluídos no calendário. O histórico mantém os valores realizados mesmo depois de editar ou excluir fichas.
 5. Exporte um backup em Configurações. Importar um backup validado substitui os dados atuais após confirmação.
 

@@ -57,7 +57,7 @@ export function Today({
         }
       />
       {active ? (
-        <Session session={active} tracker={tracker} />
+        <Session key={active.id} session={active} tracker={tracker} />
       ) : !sequence ? (
         <Empty
           title="Seu treino, do seu jeito."

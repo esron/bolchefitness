@@ -1,4 +1,11 @@
-export type Exercise = { id: string; name: string; sets: number; reps: string; load: number };
+export type Exercise = {
+  id: string;
+  name: string;
+  sets: number;
+  reps: string;
+  load: number;
+  restSeconds?: number;
+};
 export type Workout = { id: string; label: string; name: string; exercises: Exercise[] };
 export type Sequence = { id: string; name: string; workouts: Workout[]; nextWorkoutId: string };
 export type PerformedSet = { reps: string; load: number; done: boolean };
@@ -8,6 +15,8 @@ export type PerformedExercise = {
   sets: PerformedSet[];
   completedAt: string | null;
   completedDay: string | null;
+  restSeconds?: number;
+  restEndsAt?: number | null;
 };
 export type Session = {
   id: string;
@@ -86,6 +95,7 @@ export function startSession(sequence: Sequence, workoutId: string, now: Date): 
       sets: Array.from({ length: e.sets }, () => ({ reps: e.reps, load: e.load, done: false })),
       completedAt: null,
       completedDay: null,
+      ...(e.restSeconds === undefined ? {} : { restSeconds: e.restSeconds }),
     })),
   };
 }
@@ -189,6 +199,23 @@ export function validateBackup(value: unknown): State {
   const unique = (ids: string[]) => {
     if (new Set(ids).size !== ids.length) invalid();
   };
+  const restFields = (e: Record<string, unknown>, deadline = false) => {
+    const result: { restSeconds?: number; restEndsAt?: number | null } = {};
+    if (e.restSeconds !== undefined) {
+      const seconds = num(e.restSeconds);
+      if (!Number.isInteger(seconds) || seconds < 1 || seconds > 3600) invalid();
+      result.restSeconds = seconds;
+    }
+    if (deadline && e.restEndsAt !== undefined) {
+      result.restEndsAt = e.restEndsAt === null ? null : num(e.restEndsAt);
+      if (
+        result.restEndsAt !== null &&
+        (!Number.isSafeInteger(result.restEndsAt) || result.restEndsAt > 8640000000000000)
+      )
+        invalid();
+    }
+    return result;
+  };
   const root = obj(value);
   if (root.version !== 1) invalid();
   const sequences: Sequence[] = arr(root.sequences).map((v) => {
@@ -199,7 +226,14 @@ export function validateBackup(value: unknown): State {
         const e = obj(v);
         const sets = num(e.sets);
         if (!Number.isSafeInteger(sets) || sets < 1) invalid();
-        return { id: str(e.id), name: str(e.name), sets, reps: str(e.reps), load: num(e.load) };
+        return {
+          id: str(e.id),
+          name: str(e.name),
+          sets,
+          reps: str(e.reps),
+          load: num(e.load),
+          ...restFields(e),
+        };
       });
       unique(exercises.map((e) => e.id));
       return { id: str(w.id), label: str(w.label), name: str(w.name), exercises };
@@ -244,7 +278,14 @@ export function validateBackup(value: unknown): State {
         const d = new Date(`${completedDay}T12:00:00`);
         if (!Number.isFinite(d.getTime()) || localDay(d) !== completedDay) invalid();
       }
-      return { id: str(e.id), name: str(e.name), sets, completedAt, completedDay };
+      return {
+        id: str(e.id),
+        name: str(e.name),
+        sets,
+        completedAt,
+        completedDay,
+        ...restFields(e, true),
+      };
     });
     unique(exercises.map((e) => e.id));
     if (!exercises.length) invalid();
