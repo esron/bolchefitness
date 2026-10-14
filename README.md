@@ -1,11 +1,11 @@
 # Bolchefitness
 
-PWA mobile first para organizar treinos de academia, acompanhar séries e consultar exercícios concluídos. Em português, sem conta, sem backend e sem envio de dados de treino.
+PWA mobile first, grátis e de código aberto para bolcheviques fitness. Organize treinos, acompanhe séries e consulte o histórico. Em português, sem conta, sem backend e sem envio de dados de treino.
 
 ## Usar
 
 1. Crie uma sequência: AB, ABC e ABCD são sugestões; Personalizada aceita qualquer quantidade positiva de fichas.
-2. Adicione exercícios com séries, repetições (como `8–12`) e carga em kg. Use zero para exercícios sem carga adicional.
+2. Adicione exercícios e configure cada série por repetições (como `8–12`) ou por tempo em texto livre (como `1 minuto` ou `30 a 40 minutos`), além da carga em kg. Use zero para exercícios sem carga adicional.
 3. Inicie o treino e marque cada série. Apenas o primeiro exercício começa expandido. Dentro de cada exercício há um descanso manual: ajuste os segundos e toque em Iniciar; Cancelar interrompe a contagem. A duração é salva ao iniciar, e o temporizador continua ao trocar de tela ou reabrir o aplicativo. Você pode ajustar cargas e repetições de cada série durante a execução. O progresso é salvo imediatamente e retomado ao reabrir.
 4. Consulte os exercícios concluídos no calendário. O histórico mantém os valores realizados mesmo depois de editar ou excluir fichas.
 5. Exporte um backup em Configurações. Importar um backup validado substitui os dados atuais após confirmação.

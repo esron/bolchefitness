@@ -10,6 +10,7 @@ import {
   Info,
 } from 'lucide-react';
 import { validateBackup, localDay, type State } from '../domain';
+import { BrandMark } from '../components/BrandMark';
 import { type Tracker } from '../useTracker';
 import { type Pwa } from '../pwa';
 import { Modal, PageHeading } from '../components/UI';
@@ -148,11 +149,9 @@ export function Settings({ tracker, pwa }: { tracker: Tracker; pwa: Pwa }) {
           )}
         </section>
         <section className="settings-card about-card">
-          <span className="brand-mark">
-            b<span>f</span>
-          </span>
+          <BrandMark />
           <h2>Bolchefitness</h2>
-          <p>Seu treino, no seu ritmo.</p>
+          <p>Grátis e de código aberto para bolcheviques fitness.</p>
           <span className="version">VERSÃO 1.0 · FEITO PARA CONTINUAR</span>
           {pwa.hasUpdate && (
             <button

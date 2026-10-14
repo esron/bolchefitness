@@ -6,16 +6,20 @@
     BlinkMacSystemFont,
     'Segoe UI',
     sans-serif;
-  color: #eef1e9;
-  background: #101411;
+  color: #f6efe5;
+  background: #100c0d;
   font-synthesis: none;
   font-weight: 400;
-  --bg: #101411;
-  --panel: #191e1a;
-  --line: #2b342c;
-  --muted: #9ba69d;
-  --green: #c3ed86;
-  --dark: #15220f;
+  --bg: #100c0d;
+  --panel: #1c1416;
+  --line: #39282c;
+  --muted: #b7a8a4;
+  --text: #f6efe5;
+  --gold: #ffd166;
+  --gold-light: #ffe19a;
+  --red: #ff6b6b;
+  --red-deep: #8e2029;
+  --ink: #1a0d0f;
 }
 * {
   box-sizing: border-box;
@@ -48,7 +52,7 @@ input:focus-visible,
 select:focus-visible,
 a:focus-visible,
 .import-button:focus-within {
-  outline: 2px solid var(--green);
+  outline: 2px solid var(--gold);
   outline-offset: 4px;
 }
 h1,
@@ -87,15 +91,15 @@ input,
 select {
   width: 100%;
   min-width: 0;
-  color: var(--text, #eef1e9);
-  background: #111612;
-  border: 1px solid #384238;
+  color: var(--text, #f6efe5);
+  background: #171113;
+  border: 1px solid #4a363b;
   border-radius: 10px;
   padding: 13px 14px;
   min-height: 48px;
 }
 input::placeholder {
-  color: #6f7b72;
+  color: #9a8c89;
 }
 select {
   cursor: pointer;
@@ -107,7 +111,7 @@ label {
   gap: 8px;
   font-size: 13px;
   font-weight: 500;
-  color: #cdd4cd;
+  color: #e3dad2;
 }
 form {
   display: flex;
@@ -148,18 +152,12 @@ small {
   justify-content: center;
   width: 43px;
   height: 43px;
-  background: var(--green);
-  border-radius: 13px;
-  color: var(--dark);
-  font-size: 27px;
-  line-height: 1;
-  letter-spacing: -6px;
-  font-weight: 900;
-  padding-right: 6px;
-  transform: rotate(-5deg);
+  flex: 0 0 43px;
 }
-.brand-mark span {
-  font-style: italic;
+.brand-mark img {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 .brand > span:last-child {
   font-size: 23px;
@@ -167,7 +165,7 @@ small {
   letter-spacing: -0.9px;
 }
 .brand > span:last-child > span {
-  color: var(--green);
+  color: var(--gold);
 }
 .brand small {
   display: block;
@@ -182,17 +180,17 @@ small {
   align-items: center;
   gap: 7px;
   font-size: 11px;
-  color: #a8b5aa;
-  background: #1b231d;
-  border: 1px solid #2c392e;
+  color: #c9b9b0;
+  background: #25191c;
+  border: 1px solid #493338;
   padding: 9px 12px;
   border-radius: 50px;
 }
 .connection svg {
-  color: var(--green);
+  color: var(--gold);
 }
 .connection.offline {
-  color: var(--green);
+  color: var(--gold);
 }
 .desktop-nav {
   display: flex;
@@ -209,8 +207,8 @@ small {
   color: var(--muted);
 }
 .desktop-nav button.active {
-  background: #273020;
-  color: var(--green);
+  background: #342024;
+  color: var(--gold);
 }
 main {
   padding: 38px 0 48px;
@@ -251,19 +249,19 @@ main {
   white-space: nowrap;
 }
 .primary {
-  background: var(--green);
-  color: var(--dark);
+  background: var(--gold);
+  color: var(--ink);
 }
 .primary:hover {
-  background: #d1f5a5;
+  background: #ffe19a;
 }
 .secondary {
-  border: 1px solid #394539;
-  background: #202721;
-  color: #dbe4d9;
+  border: 1px solid #533f42;
+  background: #2b2023;
+  color: #e9dcca;
 }
 .secondary:hover {
-  background: #2a342b;
+  background: #39282c;
 }
 .full {
   width: 100%;
@@ -279,11 +277,11 @@ main {
   color: var(--muted);
 }
 .icon-button:hover {
-  background: #2c342d;
+  background: #39282c;
   color: #fff;
 }
 .danger {
-  color: #e79890;
+  color: #ff8b82;
 }
 .actions {
   display: flex;
@@ -296,18 +294,18 @@ main {
   justify-content: center;
   gap: 5px;
   font-size: 12px;
-  color: var(--green);
+  color: var(--gold);
   min-height: 44px;
   padding: 0 4px;
 }
 .text-button.danger {
-  color: #d1948b;
+  color: #f29a90;
 }
 .empty {
   padding: 42px 24px;
-  border: 1px dashed #3b483a;
+  border: 1px dashed #593f43;
   border-radius: 18px;
-  background: linear-gradient(135deg, #202a1d50, #171e17);
+  background: linear-gradient(135deg, #3a252b50, #201619);
   text-align: center;
   display: flex;
   align-items: center;
@@ -315,8 +313,8 @@ main {
   gap: 16px;
 }
 .empty-icon {
-  color: var(--green);
-  background: #2c3a24;
+  color: var(--gold);
+  background: #3a2328;
   border-radius: 18px;
   width: 66px;
   height: 66px;
@@ -340,8 +338,8 @@ main {
   gap: 20px;
 }
 .next-workout {
-  background: var(--green);
-  color: var(--dark);
+  background: var(--red);
+  color: var(--ink);
   border-radius: 18px;
   padding: 27px;
   position: relative;
@@ -382,8 +380,8 @@ main {
   letter-spacing: -4px;
   font-weight: 800;
   line-height: 1;
-  background: #15220f0c;
-  border: 1px solid #15220f15;
+  background: #1a0d0f0c;
+  border: 1px solid #1a0d0f15;
   min-width: 87px;
   height: 90px;
   border-radius: 14px;
@@ -394,7 +392,7 @@ main {
 }
 .hero-content p {
   font-size: 12px;
-  color: #435334;
+  color: #1a0d0f;
   margin-bottom: 3px;
 }
 .hero-content h2 {
@@ -405,7 +403,7 @@ main {
 }
 .hero-content div > span {
   font-size: 12px;
-  color: #344529;
+  color: #1a0d0f;
 }
 .hero-separator {
   margin: 0 7px;
@@ -419,14 +417,14 @@ main {
 }
 .hero-preview > span {
   font-size: 10px;
-  border: 1px solid #15220f29;
+  border: 1px solid #1a0d0f29;
   border-radius: 30px;
   padding: 6px 9px;
-  color: #344529;
+  color: #1a0d0f;
 }
 .hero-start {
-  background: #172412;
-  color: #e3f8d1;
+  background: #1a0d0f;
+  color: #fff3df;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -444,7 +442,7 @@ main {
   margin-right: auto;
 }
 .hero-start:hover {
-  background: #263c1d;
+  background: #51151b;
 }
 .workout-chooser {
   display: flex;
@@ -455,15 +453,15 @@ main {
 }
 .workout-chooser label {
   font-size: 11px;
-  color: #435334;
+  color: #1a0d0f;
   white-space: nowrap;
 }
 .workout-chooser select {
   min-height: 35px;
   padding: 7px 10px;
-  background: #c3ed86;
-  color: #24351c;
-  border: 1px solid #8aad61;
+  background: #ffd166;
+  color: #1a0d0f;
+  border: 1px solid #b3832f;
   border-radius: 7px;
   font-size: 11px;
   width: auto;
@@ -480,7 +478,7 @@ main {
   overflow: hidden;
 }
 .motivation-card > svg {
-  color: var(--green);
+  color: var(--gold);
   margin-bottom: 25px;
 }
 .motivation-card .eyebrow {
@@ -508,10 +506,10 @@ main {
 .mini-bars span {
   flex: 1;
   border-radius: 4px 4px 0 0;
-  background: #35422d;
+  background: #4c3034;
 }
 .mini-bars span:last-child {
-  background: var(--green);
+  background: var(--gold);
 }
 .stats-grid {
   display: grid;
@@ -534,7 +532,7 @@ main {
   letter-spacing: 1.15px;
 }
 .stat-card > span svg {
-  color: var(--green);
+  color: var(--gold);
 }
 .stat-card > strong {
   font-size: 34px;
@@ -571,8 +569,8 @@ main {
 }
 .count {
   font-size: 11px;
-  background: #283322;
-  color: var(--green);
+  background: #3a2328;
+  color: var(--gold);
   border-radius: 6px;
   padding: 4px 7px;
 }
@@ -581,14 +579,14 @@ main {
   align-items: center;
   gap: 17px;
   padding: 24px;
-  background: #161b17;
+  background: #201719;
   border: 1px solid var(--line);
   border-radius: 13px;
   color: var(--muted);
 }
 .quiet-empty strong {
   font-size: 13px;
-  color: #cbd4c8;
+  color: #e3dad2;
   font-weight: 500;
 }
 .quiet-empty p {
@@ -601,11 +599,11 @@ main {
   justify-content: center;
   gap: 7px;
   font-size: 10px;
-  color: #788578;
+  color: #b7a8a4;
   margin: 27px 0 0;
 }
 .local-note > .status-dot {
-  color: var(--green);
+  color: var(--gold);
   width: 5px;
   height: 5px;
 }
@@ -625,12 +623,12 @@ main {
   text-align: left;
 }
 .recent-icon {
-  color: var(--green);
+  color: var(--gold);
   width: 40px;
   height: 40px;
   display: grid;
   place-items: center;
-  background: #2a3423;
+  background: #3a2328;
   border-radius: 10px;
 }
 .recent-item > div {
@@ -653,15 +651,15 @@ main {
   font-size: 8px;
   letter-spacing: 1px;
   font-weight: 700;
-  background: #293a21;
-  color: var(--green);
+  background: #402027;
+  color: var(--gold);
   padding: 6px 8px;
   border-radius: 5px;
   white-space: nowrap;
 }
 .tag.neutral {
-  background: #333229;
-  color: #d6c98e;
+  background: #342024;
+  color: #f4d487;
 }
 .sequence-bar {
   display: flex;
@@ -680,7 +678,7 @@ main {
   min-width: 0;
 }
 .sequence-select > svg {
-  color: var(--green);
+  color: var(--gold);
 }
 .sequence-select label {
   font-size: 10px;
@@ -693,7 +691,7 @@ main {
   padding: 0;
   min-height: 28px;
   font-size: 16px;
-  color: #e1e7dd;
+  color: #e7dbcb;
   font-weight: 600;
 }
 .workout-grid {
@@ -714,7 +712,7 @@ main {
   display: block;
 }
 .workout-open:hover {
-  background: #212921;
+  background: #342024;
 }
 .workout-top {
   display: flex;
@@ -730,8 +728,8 @@ main {
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  color: var(--green);
-  background: #2d3926;
+  color: var(--gold);
+  background: #40272b;
   font-size: 23px;
   font-weight: 650;
 }
@@ -749,7 +747,7 @@ main {
   justify-content: space-between;
   align-items: center;
   margin-top: 25px;
-  color: var(--green);
+  color: var(--gold);
   font-size: 11px;
 }
 .card-tools {
@@ -762,16 +760,16 @@ main {
   height: 44px;
 }
 .add-card {
-  border: 1px dashed #3c4939;
+  border: 1px dashed #594044;
   border-radius: 15px;
-  color: var(--green);
+  color: var(--gold);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 12px;
   min-height: 245px;
-  background: #17201550;
+  background: #1f131750;
 }
 .add-card strong {
   font-size: 13px;
@@ -829,7 +827,7 @@ main {
   font-size: 11px;
   font-weight: 650;
   color: var(--muted);
-  background: #242d24;
+  background: #34272a;
   border-radius: 8px;
 }
 .exercise-info {
@@ -870,13 +868,13 @@ main {
   padding: 23px;
 }
 .session-summary .eyebrow {
-  color: var(--green);
+  color: var(--gold);
   font-size: 9px;
 }
 .live-dot {
   width: 6px;
   height: 6px;
-  background: var(--green);
+  background: var(--gold);
   border-radius: 50%;
 }
 .session-summary h2 {
@@ -893,7 +891,7 @@ main {
 }
 .session-count {
   font-size: 38px;
-  color: var(--green);
+  color: var(--gold);
   display: flex;
   align-items: center;
   gap: 3px;
@@ -909,11 +907,11 @@ main {
 }
 .progress-track {
   height: 4px;
-  background: #2a3329;
+  background: #40282c;
 }
 .progress-track > div {
   height: 100%;
-  background: var(--green);
+  background: var(--gold);
   transition: width 0.2s;
 }
 .progress-caption {
@@ -925,7 +923,7 @@ main {
   margin-bottom: 10px;
 }
 .progress-caption strong {
-  color: var(--green);
+  color: var(--gold);
 }
 .session-exercises {
   display: flex;
@@ -939,7 +937,7 @@ main {
   overflow: hidden;
 }
 .session-exercise.is-complete {
-  border-color: #4b6638;
+  border-color: #875035;
 }
 .exercise-heading {
   display: flex;
@@ -953,8 +951,8 @@ main {
   color: var(--muted);
 }
 .is-complete .exercise-number {
-  color: var(--green);
-  background: #2e4125;
+  color: var(--gold);
+  background: #4a2429;
 }
 .sets-area {
   padding: 0 20px 15px;
@@ -970,16 +968,16 @@ main {
 .set-labels {
   font-size: 8px;
   letter-spacing: 1px;
-  color: #839084;
+  color: #a8938f;
   padding: 9px 0;
 }
 .set-row {
   min-height: 57px;
-  border-top: 1px solid #2b332a;
+  border-top: 1px solid #39282c;
   font-size: 13px;
 }
 .set-row.done {
-  color: #b5cf9f;
+  color: #f6cf6f;
 }
 .set-number {
   color: var(--muted);
@@ -996,7 +994,7 @@ main {
   font-size: 10px;
 }
 .load-button svg {
-  color: #72806d;
+  color: #ab9690;
 }
 .target-editor {
   display: grid;
@@ -1009,9 +1007,9 @@ main {
   gap: 10px;
   align-items: end;
   padding: 12px;
-  border: 1px solid #2b332a;
+  border: 1px solid #39282c;
   border-radius: 12px;
-  background: #151b15;
+  background: #201619;
 }
 .target-editor-row > strong {
   align-self: center;
@@ -1046,7 +1044,7 @@ main {
 .check-container span {
   width: 30px;
   height: 30px;
-  border: 1px solid #44513f;
+  border: 1px solid #5b4448;
   border-radius: 8px;
   display: grid;
   place-items: center;
@@ -1054,12 +1052,12 @@ main {
   pointer-events: none;
 }
 .check-container input:checked + span {
-  color: #182712;
-  background: var(--green);
-  border-color: var(--green);
+  color: #1a0d0f;
+  background: var(--gold);
+  border-color: var(--gold);
 }
 .check-container input:focus-visible + span {
-  outline: 2px solid var(--green);
+  outline: 2px solid var(--gold);
   outline-offset: 3px;
 }
 .complete-exercise {
@@ -1069,14 +1067,14 @@ main {
   gap: 7px;
   width: 100%;
   font-size: 11px;
-  color: var(--green);
-  border: 1px solid #37452f;
+  color: var(--gold);
+  border: 1px solid #533f42;
   border-radius: 8px;
   min-height: 44px;
   margin-top: 8px;
 }
 .complete-exercise:hover {
-  background: #293623;
+  background: #40272b;
 }
 .session-footer {
   display: flex;
@@ -1138,21 +1136,21 @@ main {
   background: transparent;
 }
 .calendar-day.has-workout > i {
-  background: var(--green);
+  background: var(--gold);
 }
 .calendar-day.today {
-  border: 1px solid #627348;
+  border: 1px solid #987344;
 }
 .calendar-day.selected {
-  background: var(--green);
-  color: var(--dark);
+  background: var(--gold);
+  color: var(--ink);
   font-weight: 700;
 }
 .calendar-day.selected > i {
-  background: var(--dark);
+  background: var(--ink);
 }
 .calendar-day:hover:not(.selected) {
-  background: #2b3528;
+  background: #3c282b;
 }
 .calendar-legend {
   display: flex;
@@ -1171,7 +1169,7 @@ main {
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: var(--green);
+  background: var(--gold);
 }
 .calendar-month-stat {
   display: flex;
@@ -1182,7 +1180,7 @@ main {
   margin-top: 8px;
 }
 .calendar-month-stat > svg {
-  color: var(--green);
+  color: var(--gold);
 }
 .calendar-month-stat strong {
   font-size: 13px;
@@ -1208,8 +1206,8 @@ main {
   gap: 11px;
 }
 .check-badge {
-  background: #2c3c22;
-  color: var(--green);
+  background: #4a282d;
+  color: var(--gold);
   width: 31px;
   height: 31px;
   display: grid;
@@ -1250,7 +1248,7 @@ main {
 .day-empty {
   padding: 43px 15px;
   text-align: center;
-  color: #7f8f7b;
+  color: #a8938f;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1288,8 +1286,8 @@ main {
   padding: 27px;
 }
 .settings-icon {
-  color: var(--green);
-  background: #293723;
+  color: var(--gold);
+  background: #40272b;
   width: 47px;
   height: 47px;
   border-radius: 12px;
@@ -1307,7 +1305,7 @@ main {
   margin-bottom: 20px;
 }
 .install-instructions {
-  background: #131914;
+  background: #1a1012;
   padding: 15px;
   border-radius: 10px;
 }
@@ -1319,7 +1317,7 @@ main {
   margin-top: 9px;
 }
 .install-instructions strong {
-  color: #c5d3be;
+  color: #f6efe5;
 }
 .backup-actions {
   display: flex;
@@ -1349,10 +1347,10 @@ main {
   align-items: start;
   gap: 10px;
   padding: 15px;
-  background: #252c20;
-  border: 1px solid #35422a;
+  background: #342024;
+  border: 1px solid #533b3f;
   border-radius: 10px;
-  color: #b4c2a9;
+  color: #d6c4b4;
   margin-bottom: 20px;
 }
 .info-note p {
@@ -1371,10 +1369,7 @@ main {
 .about-card > .brand-mark {
   width: 60px;
   height: 60px;
-  font-size: 38px;
-  letter-spacing: -9px;
-  padding-right: 10px;
-  border-radius: 17px;
+  flex-basis: 60px;
   margin-bottom: 20px;
 }
 .about-card h2 {
@@ -1386,7 +1381,7 @@ main {
 .version {
   font-size: 8px;
   letter-spacing: 1.3px;
-  color: #7f8f7b;
+  color: #a8938f;
 }
 .about-card .secondary {
   margin-top: 20px;
@@ -1395,7 +1390,7 @@ main {
   display: flex;
   gap: 7px;
   font-size: 12px;
-  color: var(--green);
+  color: var(--gold);
   align-items: center;
 }
 .error-banner,
@@ -1415,9 +1410,9 @@ main {
   color: #efb9b1;
 }
 .update-banner {
-  border: 1px solid #3c5031;
-  background: #222e1c;
-  color: var(--green);
+  border: 1px solid #674348;
+  background: #32191e;
+  color: var(--gold);
 }
 .loading {
   min-height: 300px;
@@ -1442,9 +1437,9 @@ main {
   bottom: 25px;
   left: 50%;
   transform: translateX(-50%);
-  background: #283323;
-  color: var(--green);
-  border: 1px solid #4b613c;
+  background: #40272b;
+  color: var(--gold);
+  border: 1px solid #875035;
   padding: 10px 16px;
   font-size: 11px;
   border-radius: 30px;
@@ -1458,9 +1453,9 @@ main {
 }
 dialog {
   position: fixed;
-  color: #eef1e9;
-  background: #1a211b;
-  border: 1px solid #3c4837;
+  color: #f6efe5;
+  background: #201619;
+  border: 1px solid #533f42;
   border-radius: 18px;
   width: calc(100% - 32px);
   max-width: 510px;
@@ -1470,7 +1465,7 @@ dialog {
   overflow: auto;
 }
 dialog::backdrop {
-  background: #080e08c9;
+  background: #080708d9;
   backdrop-filter: blur(5px);
 }
 .modal-head {
@@ -1493,7 +1488,7 @@ dialog::backdrop {
 }
 .field-label {
   font-size: 13px;
-  color: #cdd4cd;
+  color: #e3dad2;
   font-weight: 500;
 }
 .presets {
@@ -1506,8 +1501,8 @@ dialog::backdrop {
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  background: #141b15;
-  border: 1px solid #344032;
+  background: #201619;
+  border: 1px solid #533f42;
   border-radius: 10px;
   min-height: 106px;
   padding: 14px 3px;
@@ -1526,24 +1521,24 @@ dialog::backdrop {
   color: var(--muted);
 }
 .preset.selected {
-  background: #2c3a22;
-  border-color: var(--green);
-  color: var(--green);
+  background: #47252a;
+  border-color: var(--gold);
+  color: var(--gold);
 }
 .preset.selected svg {
-  color: var(--green);
+  color: var(--gold);
 }
 .form-error {
-  background: #372622;
-  border: 1px solid #70483e;
+  background: #3a1b20;
+  border: 1px solid #8b4340;
   border-radius: 8px;
-  color: #f0bbb0;
+  color: #f4c3b8;
   padding: 12px;
   font-size: 12px;
 }
 .dialog-copy {
   font-size: 13px;
-  color: #c1cbbd;
+  color: #e3dad2;
   margin-bottom: 20px;
 }
 .modal-actions {
@@ -1609,8 +1604,7 @@ dialog::backdrop {
   .brand-mark {
     width: 36px;
     height: 36px;
-    font-size: 24px;
-    border-radius: 11px;
+    flex-basis: 36px;
   }
   .brand {
     gap: 9px;
@@ -1625,7 +1619,7 @@ dialog::backdrop {
   .connection {
     padding: 8px;
     border: none;
-    background: #20291e;
+    background: #2b1b1e;
   }
   .connection span {
     display: none;
@@ -1760,8 +1754,8 @@ dialog::backdrop {
     bottom: 0;
     left: 0;
     right: 0;
-    background: #141a15f5;
-    border-top: 1px solid #2b362a;
+    background: #171113f5;
+    border-top: 1px solid #39282c;
     padding: 7px 7px max(8px, env(safe-area-inset-bottom));
     z-index: 4;
     backdrop-filter: blur(15px);
@@ -1774,14 +1768,14 @@ dialog::backdrop {
     gap: 6px;
     min-height: 55px;
     flex: 1;
-    color: #879582;
+    color: #b7a8a4;
     font-size: 9px;
     max-width: 105px;
     border-radius: 10px;
   }
   .bottom-nav button.active {
-    color: var(--green);
-    background: #28342080;
+    color: var(--gold);
+    background: #3a222780;
   }
   .saving {
     bottom: 85px;
@@ -2028,7 +2022,7 @@ dialog::backdrop {
   color: var(--muted);
 }
 .rest-title svg {
-  color: var(--green);
+  color: var(--gold);
 }
 .rest-controls {
   display: flex;
@@ -2067,7 +2061,7 @@ dialog::backdrop {
 }
 .rest-complete .rest-clock,
 .rest-done {
-  color: var(--green);
+  color: var(--gold);
 }
 .rest-done {
   font-size: 11px;

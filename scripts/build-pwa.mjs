@@ -7,13 +7,14 @@ const manifest = {
   id: base,
   name: 'Bolchefitness',
   short_name: 'Bolchefitness',
-  description: 'Seu treino, no seu ritmo. Fichas, séries e histórico offline.',
+  description:
+    'Grátis e de código aberto para bolcheviques fitness. Fichas, séries e histórico offline.',
   lang: 'pt-BR',
   start_url: base,
   scope: base,
   display: 'standalone',
-  background_color: '#101411',
-  theme_color: '#101411',
+  background_color: '#100C0D',
+  theme_color: '#100C0D',
   icons: [
     { src: `${base}icons/icon-192.png`, sizes: '192x192', type: 'image/png', purpose: 'any' },
     { src: `${base}icons/icon-512.png`, sizes: '512x512', type: 'image/png', purpose: 'any' },

@@ -19,6 +19,7 @@ import { Calendar } from './screens/Calendar';
 import { Settings } from './screens/Settings';
 import { playRestSound } from './restSound';
 import { remainingRestSeconds } from './rest';
+import { BrandMark } from './components/BrandMark';
 type Tab = 'today' | 'workouts' | 'calendar' | 'settings';
 const tabs = [
   { id: 'today' as const, label: 'Hoje', icon: House },
@@ -53,13 +54,16 @@ export default function App() {
     for (const [key, deadline] of active) {
       if (restTimers.current.get(key)?.deadline === deadline) continue;
       const token = `${key}:${deadline}`;
-      const timer = window.setTimeout(() => {
-        restTimers.current.delete(key);
-        if (!sounded.current.has(token) && remainingRestSeconds(deadline, Date.now()) === 0) {
-          sounded.current.add(token);
-          playRestSound();
-        }
-      }, Math.max(0, deadline - Date.now()));
+      const timer = window.setTimeout(
+        () => {
+          restTimers.current.delete(key);
+          if (!sounded.current.has(token) && remainingRestSeconds(deadline, Date.now()) === 0) {
+            sounded.current.add(token);
+            playRestSound();
+          }
+        },
+        Math.max(0, deadline - Date.now())
+      );
       restTimers.current.set(key, { deadline, timer });
     }
   }, [tracker.ready, tracker.state.sessions]);
@@ -78,9 +82,7 @@ export default function App() {
       <div className="app-shell">
         <header className="app-header">
           <button className="brand" aria-label="Bolchefitness, início" onClick={() => go('today')}>
-            <span className="brand-mark">
-              b<span>f</span>
-            </span>
+            <BrandMark />
             <span>
               bolche<span>fitness</span>
               <small>SEU TREINO, NO SEU RITMO</small>
