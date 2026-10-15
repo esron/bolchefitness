@@ -6,7 +6,13 @@ import {
   validateBackup,
   finishSession,
 } from '../src/domain';
-import { startRest, cancelRest, remainingRestSeconds, formatRest } from '../src/rest';
+import {
+  startRest,
+  completeSetAndStartRest,
+  cancelRest,
+  remainingRestSeconds,
+  formatRest,
+} from '../src/rest';
 function fixture() {
   const sequence = createSequence('Rotina', 2);
   sequence.workouts[0].exercises = [{ id: 'ex', name: 'Remada', sets: 3, reps: '10', load: 20 }];
@@ -34,6 +40,16 @@ it('salva duração e prazo sem alterar séries ou iniciar automaticamente', () 
   const cancelled = cancelRest(next, next.sessions[0].id, 'ex');
   expect(cancelled.sessions[0].exercises[0].restEndsAt).toBeNull();
   expect(cancelled.sessions[0].exercises[0].restSeconds).toBe(90);
+});
+it('marca a série e inicia o descanso configurado sem mudar a preferência do exercício', () => {
+  const state = fixture();
+  state.sequences[0].workouts[0].exercises[0].restSeconds = 45;
+  state.sessions[0].exercises[0].restSeconds = 45;
+  const next = completeSetAndStartRest(state, state.sessions[0].id, 'ex', 0, 1000);
+  expect(next.sessions[0].exercises[0].sets[0].done).toBe(true);
+  expect(next.sessions[0].exercises[0].restEndsAt).toBe(46000);
+  expect(next.sessions[0].exercises[0].restSeconds).toBe(45);
+  expect(next.sequences[0].workouts[0].exercises[0].restSeconds).toBe(45);
 });
 it('calcula por prazo real, inclusive após pausa de execução e término', () => {
   expect(remainingRestSeconds(91000, 1000)).toBe(90);

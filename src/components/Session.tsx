@@ -13,7 +13,7 @@ import {
 import { type Tracker } from '../useTracker';
 import { Modal } from './UI';
 import { RestTimer } from './RestTimer';
-import { startRest, cancelRest } from '../rest';
+import { completeSetAndStartRest, startRest, cancelRest } from '../rest';
 import { enableRestSound } from '../restSound';
 export function Session({ session, tracker }: { session: SessionData; tracker: Tracker }) {
   const { update, pending } = tracker;
@@ -142,7 +142,20 @@ export function Session({ session, tracker }: { session: SessionData; tracker: T
                           disabled={pending}
                           onChange={(event) => {
                             const done = event.currentTarget.checked;
-                            void mutate((s) => setSetDone(s, exercise.id, i, done, new Date()));
+                            if (done) {
+                              enableRestSound();
+                              void update((state) =>
+                                completeSetAndStartRest(
+                                  state,
+                                  session.id,
+                                  exercise.id,
+                                  i,
+                                  Date.now()
+                                )
+                              );
+                            } else {
+                              void mutate((s) => setSetDone(s, exercise.id, i, false, new Date()));
+                            }
                           }}
                         />
                         <span>

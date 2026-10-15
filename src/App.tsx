@@ -17,7 +17,7 @@ import { Today } from './screens/Today';
 import { Workouts } from './screens/Workouts';
 import { Calendar } from './screens/Calendar';
 import { Settings } from './screens/Settings';
-import { playRestSound } from './restSound';
+import { playRestSound, vibrateRestComplete } from './restSound';
 import { remainingRestSeconds } from './rest';
 import { BrandMark } from './components/BrandMark';
 type Tab = 'today' | 'workouts' | 'calendar' | 'settings';
@@ -60,6 +60,7 @@ export default function App() {
           if (!sounded.current.has(token) && remainingRestSeconds(deadline, Date.now()) === 0) {
             sounded.current.add(token);
             playRestSound();
+            vibrateRestComplete();
           }
         },
         Math.max(0, deadline - Date.now())

@@ -3,6 +3,15 @@ test('primeiro exercício aberto e descanso manual configurável, persistente e 
   page,
   context,
 }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'vibrate', {
+      configurable: true,
+      value: (pattern: number | number[]) => {
+        (window as Window & { vibrationPattern?: number | number[] }).vibrationPattern = pattern;
+        return true;
+      },
+    });
+  });
   await page.goto('./');
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;
@@ -55,7 +64,9 @@ test('primeiro exercício aberto e descanso manual configurável, persistente e 
   await page.getByRole('checkbox', { name: 'Remada, série 1' }).click();
   await expect(page.getByRole('checkbox', { name: 'Remada, série 1' })).toBeChecked();
   await expect(timer).toHaveText('01:00');
-  await expect(page.getByRole('button', { name: 'Cancelar descanso de Remada' })).not.toBeVisible();
+  await expect(page.getByRole('button', { name: 'Cancelar descanso de Remada' })).toBeVisible();
+  await page.getByRole('button', { name: 'Cancelar descanso de Remada' }).click();
+  await expect(page.getByRole('button', { name: 'Iniciar descanso de Remada' })).toBeVisible();
   await page.clock.install();
   await context.setOffline(true);
   await page.getByLabel('Descanso em segundos de Remada').fill('90');
@@ -82,6 +93,13 @@ test('primeiro exercício aberto e descanso manual configurável, persistente e 
   await page.clock.runFor(2000);
   await expect(timer).toHaveText('00:00');
   await expect(page.getByRole('status')).toHaveText('Descanso concluído.');
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () => (window as Window & { vibrationPattern?: number | number[] }).vibrationPattern
+      )
+    )
+    .toEqual([180, 80, 180]);
   await page.locator('.exercise-heading').nth(1).click();
   await expect(page.getByRole('checkbox', { name: 'Supino, série 1' })).toBeVisible();
   await expect(page.getByRole('timer', { name: 'Descanso de Supino' })).toHaveText('01:00');

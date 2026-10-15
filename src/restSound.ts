@@ -33,5 +33,24 @@ export function playRestSound(): void {
     }
   };
   if (audio.state === 'running') play();
-  else void audio.resume().then(play).catch(() => {});
+  else
+    void audio
+      .resume()
+      .then(play)
+      .catch(() => {});
+}
+
+export function vibrateRestComplete(): void {
+  if (
+    typeof navigator === 'undefined' ||
+    typeof navigator.vibrate !== 'function' ||
+    typeof document === 'undefined' ||
+    document.visibilityState !== 'visible'
+  )
+    return;
+  try {
+    navigator.vibrate([180, 80, 180]);
+  } catch {
+    // Vibration is optional; the sound and visual completion state remain available.
+  }
 }

@@ -1,4 +1,4 @@
-import { updateSession, type State } from './domain';
+import { setSetDone, updateSession, type State } from './domain';
 export const DEFAULT_REST_SECONDS = 60;
 export const MAX_REST_SECONDS = 3600;
 export function startRest(
@@ -47,6 +47,31 @@ export function startRest(
         : seq
     ),
   };
+}
+export function completeSetAndStartRest(
+  state: State,
+  sessionId: string,
+  exerciseId: string,
+  setIndex: number,
+  now: number
+): State {
+  if (!Number.isFinite(now)) throw new Error('Horário inválido.');
+  const session = state.sessions.find((item) => item.id === sessionId);
+  const exercise = session?.exercises.find((item) => item.id === exerciseId);
+  if (!exercise?.sets[setIndex]) throw new Error('Série não encontrada.');
+  if (exercise.sets[setIndex].done) return state;
+  const seconds = exercise.restSeconds ?? DEFAULT_REST_SECONDS;
+  if (!Number.isInteger(seconds) || seconds < 1 || seconds > MAX_REST_SECONDS)
+    throw new Error('Informe um descanso entre 1 e 3600 segundos.');
+  const marked = updateSession(state, sessionId, (current) =>
+    setSetDone(current, exerciseId, setIndex, true, new Date(now))
+  );
+  return updateSession(marked, sessionId, (current) => ({
+    ...current,
+    exercises: current.exercises.map((item) =>
+      item.id === exerciseId ? { ...item, restEndsAt: now + seconds * 1000 } : item
+    ),
+  }));
 }
 export function cancelRest(state: State, sessionId: string, exerciseId: string): State {
   return updateSession(state, sessionId, (session) => {
