@@ -1453,13 +1453,22 @@ main {
 }
 dialog {
   position: fixed;
+  inset-block-start: var(--modal-visual-top, 0px);
+  inset-block-end: max(
+    0px,
+    calc(100dvh - var(--modal-visual-top, 0px) - var(--modal-visual-height, 100dvh))
+  );
+  inset-inline-start: 50%;
+  inset-inline-end: auto;
+  transform: translateX(-50%);
+  margin-block: auto;
   color: #f6efe5;
   background: #201619;
   border: 1px solid #533f42;
   border-radius: 18px;
   width: calc(100% - 32px);
   max-width: 510px;
-  max-height: calc(100dvh - 48px);
+  max-height: max(0px, calc(var(--modal-visual-height, 100dvh) - 24px));
   padding: 25px;
   box-shadow: 0 30px 100px #0008;
   overflow: auto;

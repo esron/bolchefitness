@@ -179,9 +179,33 @@ export function finishSession(state: State, sessionId: string, now: Date): State
     sequences: state.sequences.map((seq) => {
       if (seq.id !== session.sequenceId) return seq;
       const index = seq.workouts.findIndex((w) => w.id === session.workoutId);
-      return index < 0
-        ? seq
-        : { ...seq, nextWorkoutId: seq.workouts[(index + 1) % seq.workouts.length].id };
+      if (index < 0) return seq;
+      return {
+        ...seq,
+        nextWorkoutId: seq.workouts[(index + 1) % seq.workouts.length].id,
+        workouts: seq.workouts.map((workout) =>
+          workout.id !== session.workoutId
+            ? workout
+            : {
+                ...workout,
+                exercises: workout.exercises.map((exercise) => {
+                  const performed = session.exercises.find((item) => item.id === exercise.id);
+                  if (!performed) return exercise;
+                  const setTargets = performed.sets.map((set) => ({
+                    value: set.reps,
+                    load: set.load,
+                  }));
+                  return {
+                    ...exercise,
+                    sets: setTargets.length,
+                    reps: setTargets[0].value,
+                    load: setTargets[0].load,
+                    setTargets,
+                  };
+                }),
+              }
+        ),
+      };
     }),
   };
 }

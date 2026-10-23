@@ -14,9 +14,25 @@ export function Modal({
   const error = useContext(PersistenceError);
   useEffect(() => {
     const prev = document.activeElement as HTMLElement;
-    ref.current?.showModal();
+    const dialog = ref.current;
+    const viewport = window.visualViewport;
+    dialog?.showModal();
+    const syncViewport = () => {
+      dialog?.style.setProperty(
+        '--modal-visual-height',
+        `${viewport?.height ?? window.innerHeight}px`
+      );
+      dialog?.style.setProperty('--modal-visual-top', `${viewport?.offsetTop ?? 0}px`);
+    };
+    syncViewport();
+    window.addEventListener('resize', syncViewport);
+    viewport?.addEventListener('resize', syncViewport);
+    viewport?.addEventListener('scroll', syncViewport);
     return () => {
-      ref.current?.close();
+      window.removeEventListener('resize', syncViewport);
+      viewport?.removeEventListener('resize', syncViewport);
+      viewport?.removeEventListener('scroll', syncViewport);
+      dialog?.close();
       prev?.focus();
     };
   }, []);

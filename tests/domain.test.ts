@@ -73,6 +73,39 @@ describe('sessões e calendário', () => {
     expect(result.sequences[0].nextWorkoutId).toBe(seq.workouts[1].id);
     expect(() => finishSession(result, session.id, new Date())).toThrow();
   });
+  it('salva quantidades, repetições e cargas ajustadas para o próximo treino', () => {
+    const seq = fixture();
+    const session = startSession(seq, seq.nextWorkoutId, new Date());
+    session.exercises[0].sets = [
+      { reps: '10', load: 35, done: true },
+      { reps: '8', load: 40, done: false },
+      { reps: '6', load: 45, done: false },
+    ];
+    const state = {
+      ...emptyState(),
+      sequences: [seq],
+      selectedSequenceId: seq.id,
+      sessions: [session],
+    };
+
+    const result = finishSession(state, session.id, new Date());
+    const saved = result.sequences[0].workouts[0].exercises[0];
+    expect(saved.sets).toBe(3);
+    expect(saved.reps).toBe('10');
+    expect(saved.load).toBe(35);
+    expect(saved.setTargets).toEqual([
+      { value: '10', load: 35 },
+      { value: '8', load: 40 },
+      { value: '6', load: 45 },
+    ]);
+    expect(
+      startSession(result.sequences[0], seq.workouts[0].id, new Date()).exercises[0].sets
+    ).toEqual([
+      { reps: '10', load: 35, done: false },
+      { reps: '8', load: 40, done: false },
+      { reps: '6', load: 45, done: false },
+    ]);
+  });
 });
 describe('backup validado', () => {
   it('aceita estado válido e rejeita versões, referências e números inválidos', () => {

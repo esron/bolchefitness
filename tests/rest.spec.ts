@@ -59,6 +59,30 @@ test('primeiro exercício aberto e descanso manual configurável, persistente e 
   await expect(page.locator('.exercise-heading').nth(1)).toHaveAttribute('aria-expanded', 'false');
   await expect(page.locator('.exercise-heading').nth(2)).toHaveAttribute('aria-expanded', 'false');
   await expect(page.getByRole('checkbox', { name: 'Supino, série 1' })).not.toBeVisible();
+  await page.getByRole('button', { name: 'Editar Remada, série 1' }).click();
+  const editDialog = page.getByRole('dialog');
+  await expect(editDialog).toBeVisible();
+  const originalViewportHeight = await page.evaluate(
+    () => window.visualViewport?.height ?? window.innerHeight
+  );
+  await page.getByLabel('Repetições').focus();
+  await page.evaluate(() => {
+    const viewport = window.visualViewport!;
+    Object.defineProperty(viewport, 'height', { configurable: true, value: 280 });
+    viewport.dispatchEvent(new Event('resize'));
+  });
+  await expect
+    .poll(async () => {
+      const box = await editDialog.boundingBox();
+      return box ? box.y + box.height : Infinity;
+    })
+    .toBeLessThanOrEqual(280);
+  await page.evaluate((height) => {
+    const viewport = window.visualViewport!;
+    Object.defineProperty(viewport, 'height', { configurable: true, value: height });
+    viewport.dispatchEvent(new Event('resize'));
+  }, originalViewportHeight);
+  await editDialog.getByRole('button', { name: 'Fechar' }).click();
   const timer = page.getByRole('timer', { name: 'Descanso de Remada' });
   await expect(timer).toHaveText('01:00');
   await page.getByRole('checkbox', { name: 'Remada, série 1' }).click();
