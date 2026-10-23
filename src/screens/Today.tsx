@@ -9,7 +9,7 @@ import {
   ChevronRight,
   Sparkles,
 } from 'lucide-react';
-import { startSession, localDay, totals } from '../domain';
+import { startSession, localDay, totals, consecutiveWorkoutWeeks } from '../domain';
 import { type Tracker } from '../useTracker';
 import { Session } from '../components/Session';
 import { Empty, PageHeading } from '../components/UI';
@@ -33,6 +33,7 @@ export function Today({
     sequence?.workouts.find((w) => w.id === (chosen || sequence.nextWorkoutId)) ??
     sequence?.workouts[0];
   const sessions = state.sessions.filter((s) => s.endedAt && totals(s).done > 0);
+  const weeklyStreak = consecutiveWorkoutWeeks(sessions, new Date());
   const month = localDay(new Date()).slice(0, 7);
   const thisMonth = sessions.filter((s) => localDay(new Date(s.endedAt!)).startsWith(month));
   const totalCompleted = state.sessions.reduce(
@@ -181,8 +182,8 @@ export function Today({
             NA ROTINA
           </span>
           <strong>
-            {sequence?.workouts.length ?? 0}
-            <small>fichas</small>
+            {weeklyStreak}
+            <small>{weeklyStreak === 1 ? 'semana' : 'semanas'}</small>
           </strong>
         </div>
       </div>

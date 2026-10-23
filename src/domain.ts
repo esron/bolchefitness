@@ -83,6 +83,32 @@ export function removeWorkout(sequence: Sequence, workoutId: string): Sequence {
 export function localDay(now: Date): string {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 }
+export function consecutiveWorkoutWeeks(
+  sessions: Pick<Session, 'endedAt' | 'exercises'>[],
+  now: Date
+): number {
+  const weekStart = (date: Date) => {
+    const start = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    start.setDate(start.getDate() - ((start.getDay() + 6) % 7));
+    return localDay(start);
+  };
+  const activeWeeks = new Set(
+    sessions
+      .filter(
+        (session) =>
+          session.endedAt &&
+          session.exercises.some((exercise) => exercise.sets.some((set) => set.done))
+      )
+      .map((session) => weekStart(new Date(session.endedAt!)))
+  );
+  let count = 0;
+  const cursor = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  while (activeWeeks.has(weekStart(cursor))) {
+    count++;
+    cursor.setDate(cursor.getDate() - 7);
+  }
+  return count;
+}
 export function startSession(sequence: Sequence, workoutId: string, now: Date): Session {
   const workout = sequence.workouts.find((w) => w.id === workoutId);
   if (!workout || workout.exercises.length === 0)

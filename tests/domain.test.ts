@@ -7,6 +7,7 @@ import {
   toggleSet,
   finishSession,
   localDay,
+  consecutiveWorkoutWeeks,
   validateBackup,
   emptyState,
   setSetDone,
@@ -39,6 +40,24 @@ describe('sequências configuráveis', () => {
   });
 });
 describe('sessões e calendário', () => {
+  it('conta semanas consecutivas com treino, sem contar duas vezes na mesma semana', () => {
+    const sessions = (dates: string[]) =>
+      dates.map((date, id) => ({
+        id: String(id),
+        endedAt: `${date}T12:00:00`,
+        exercises: [{ sets: [{ done: true }] }],
+      }));
+    expect(
+      consecutiveWorkoutWeeks(
+        sessions(['2026-10-19', '2026-10-21', '2026-10-12']),
+        new Date(2026, 9, 23)
+      )
+    ).toBe(2);
+    expect(
+      consecutiveWorkoutWeeks(sessions(['2026-10-19', '2026-10-05']), new Date(2026, 9, 23))
+    ).toBe(1);
+    expect(consecutiveWorkoutWeeks(sessions(['2026-10-12']), new Date(2026, 9, 23))).toBe(0);
+  });
   it('preserva a ficha executada e retira conclusão ao desmarcar', () => {
     const seq = fixture();
     let session = startSession(seq, seq.nextWorkoutId, new Date());
